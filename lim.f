@@ -49,29 +49,47 @@
 !   2 - x gradient
 !   3 - vortex
 ! atype -- initial value for the A field:
-!   0 - random
-!   1 - random with a hole
+!   0 - random phase
+!   1 - random
+!   2 - random with a hole
       subroutine lim_init(seed, ltype, atype)
         implicit none
         include 'lim.fh'
         integer seed, ltype, atype
-        real*8 x,y
+        real*8 x,y,v
 
         call srand(seed)
         do ix=1,nx
           do iy=1,ny
             x = 2D0*dble(ix)/dble(nx)-1D0
             y = 2D0*dble(iy)/dble(ny)-1D0
-            if (atype.eq.0) A(ix,iy) = dpi*rand(0)
-            if (atype.eq.1) then
-              A(ix,iy) = dpi*rand(0)
-              if (x**2 + y**2 < 0.75D0) A(ix,iy) = 0D0
+
+
+            if (atype.eq.0) then ! unit length
+              v = dpi*rand(0)
+              Ax(ix,iy) = dcos(v)
+              Ay(ix,iy) = dsin(v)
+            else if (atype.eq.1) then
+              Ax(ix,iy) = 2D0*rand(0)-1D0
+              Ay(ix,iy) = 2D0*rand(0)-1D0
+            else if (atype.eq.2) then
+              Ax(ix,iy) = 2D0*rand(0)-1D0
+              Ay(ix,iy) = 2D0*rand(0)-1D0
+              if (x**2 + y**2 < 0.75D0) then
+                Ax(ix,iy) = 0D0
+                Ay(ix,iy) = 0D0
+              endif
             endif
 
             if (ltype.eq.0) L(ix,iy) = 0D0
-            if (ltype.eq.1) L(ix,iy) = A(ix,iy)
-            if (ltype.eq.2) L(ix,iy) = dpi*x
+            if (ltype.eq.1) L(ix,iy) = datan2(Ay(ix,iy),Ax(ix,iy))
+            if (ltype.eq.2) L(ix,iy) = 2D0*dpi*x
             if (ltype.eq.3) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
+            if (ltype.eq.4) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
+     .                               + datan2(y+0.45D0,x-0.20D0)
+     .                               + datan2(y+0.45D0,x-0.20D0)
+     .                               - datan2(y-0.65D0,x+0.62D0)
+     .                               + datan2(y-0.55D0,x+0.70D0)
           enddo
         enddo
       end
@@ -95,17 +113,18 @@
         implicit none
         include 'lim.fh'
         integer n
-        real*8 LL(nx,ny), lx,ly, gmod
+        real*8 LL(nx,ny), lx,ly, v, gmod
         E=0D0
         do ix=1,nx
           do iy=1,ny
 
             ! interaction energy
-            E = E + dcos(A(ix,iy)-LL(ix,iy))**2
+            v = datan2(Ay(ix,iy),Ax(ix,iy))
+            E = E + dcos(v-LL(ix,iy))**2
 
             ! its derivative d/dLL(ix,iy)
-            dE(ix,iy) = 2D0*dcos(A(ix,iy)-LL(ix,iy))*
-     .                      dsin(A(ix,iy)-LL(ix,iy))
+            dE(ix,iy) = 2D0*dcos(v-LL(ix,iy))*
+     .                      dsin(v-LL(ix,iy))
 
             ! gradient energy
             if (ix.lt.nx.and.iy.lt.ny) then 
