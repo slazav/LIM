@@ -4,8 +4,7 @@
         real*8  Ax(nx,ny),Ay(nx,ny), L(nx,ny), dE(nx,ny), E, Ug
         common /c1/ L,Ax,Ay,Ug
 
-        real*8 dpi,pi
-        parameter (pi=3.1415926535897932D0)
+        real*8 dpi
         parameter (dpi=6.2831853071795864D0)
 
 
