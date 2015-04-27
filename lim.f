@@ -99,7 +99,7 @@
       subroutine lim_calc(grad, msg_lev)
         implicit none
         include 'lim.fh'
-        real*8 grad
+        real*8 grad,gmod
 
         integer error, lw, msg_lev
         parameter (lw = 14*nx*ny)
@@ -119,13 +119,16 @@
         do ix=1,nx
           do iy=1,ny
 
-            ! interaction energy
+            ! interaction energy and its derivative d/dLL(ix,iy)
             v = datan2(Ay(ix,iy),Ax(ix,iy))
-            E = E + dcos(v-LL(ix,iy))**2
-
-            ! its derivative d/dLL(ix,iy)
-            dE(ix,iy) = 2D0*dcos(v-LL(ix,iy))*
-     .                      dsin(v-LL(ix,iy))
+            if (1.eq.1) then
+              E = E - dcos(v-LL(ix,iy))**2
+              dE(ix,iy) = -2D0*dcos(v-LL(ix,iy))*
+     .                         dsin(v-LL(ix,iy))
+            else
+              E = E - dcos(v-LL(ix,iy))
+              dE(ix,iy) = -2D0*dsin(v-LL(ix,iy))
+            endif
 
             ! gradient energy
             if (ix.lt.nx.and.iy.lt.ny) then 
@@ -215,7 +218,7 @@
         write(5,'(3A1)', advance='no') int(255*r),int(255*g),int(255*b)
       end
 
-      ! normalize phase gradient to be -pi..pi
+      ! normalize phase difference to be a -pi..pi saw
       function gmod(x)
         implicit none
         real*8 gmod, x, dpi
