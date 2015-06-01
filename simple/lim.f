@@ -41,7 +41,7 @@
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! initialize fields A nd L (phases, 0..2pi)
+! initialize fields A and L (phases, 0..2pi)
 ! ltype -- initial value for the L field:
 !   0 - constant
 !   1 - same as A
@@ -64,17 +64,7 @@
             x = 2D0*dble(ix)/dble(nx)-1D0
             y = 2D0*dble(iy)/dble(ny)-1D0
 
-
-            if (ltype.eq.0) L(ix,iy) = 0D0
-            if (ltype.eq.1) L(ix,iy) = datan2(Ay(ix,iy),Ax(ix,iy))
-            if (ltype.eq.2) L(ix,iy) = 2D0*dpi*x
-            if (ltype.eq.3) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
-            if (ltype.eq.4) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
-     .                               + datan2(y+0.45D0,x-0.20D0)
-     .                               + datan2(y+0.45D0,x-0.20D0)
-     .                               - datan2(y-0.65D0,x+0.62D0)
-     .                               + datan2(y-0.55D0,x+0.70D0)
-
+            ! A field
             if (atype.eq.0) then ! unit length
               v = dpi*rand(0)
               Ax(ix,iy) = dcos(v)
@@ -90,6 +80,17 @@
                 Ay(ix,iy) = 0D0
               endif
             endif
+
+            ! L field
+            if (ltype.eq.0) L(ix,iy) = 0D0
+            if (ltype.eq.1) L(ix,iy) = datan2(Ay(ix,iy),Ax(ix,iy))
+            if (ltype.eq.2) L(ix,iy) = 2D0*dpi*x
+            if (ltype.eq.3) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
+            if (ltype.eq.4) L(ix,iy) = datan2(y+0.25D0,x-0.30D0)
+     .                               + datan2(y+0.45D0,x-0.20D0)
+     .                               + datan2(y+0.45D0,x-0.20D0)
+     .                               - datan2(y-0.65D0,x+0.62D0)
+     .                               + datan2(y-0.55D0,x+0.70D0)
 
           enddo
         enddo

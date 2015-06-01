@@ -7,19 +7,13 @@ FFLAGS= -Werror -Wconversion\
 
 FC=gfortran
 
-HE3LIB_PATH = ../he3lib
-
-FFLAGS += -I$(HE3LIB_PATH)
-LDFLAGS = -L$(HE3LIB_PATH)
-LDLIBS  = -lhe3
-
 all: lim
 
-lim: lim.o tn/tn.a
+lim: lim.o ../tn/tn.a
 	$(FC) $(LDFLAGS) -g -o $@ $+  $(LDLIBS)
 
-tn/tn.a:
-	make -C tn
+../tn/tn.a:
+	make -C ../tn
 
 
 ####

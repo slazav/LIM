@@ -1,5 +1,6 @@
 *.pnm
 *.gif
-lim
 *.o
 *.a
+
+lim
