@@ -1,0 +1,11 @@
+        integer ix,iy, nx,ny
+        parameter (nx=200, ny=200)
+
+        real*8 A(nx,ny,2), L(nx,ny,2)
+        real*8 dE(nx,ny,2), E, Ug
+        common /c1/ L,A,Ug
+
+        real*8 dpi
+        parameter (dpi=6.2831853071795864D0)
+
+
