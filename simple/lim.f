@@ -10,30 +10,31 @@
       program lim 
         implicit none
         integer i, rnd_seed, ltype, atype, msg_lev
-        real*8 grad
+        real*8 Ugr, Uin
 
         rnd_seed = 12321
         ltype = 4
         atype = 0
         msg_lev = -1 ! tn message level
+        Uin=1D0
 
         call lim_init(rnd_seed, ltype, atype)
-        grad=0.01D0
+        Ugr=0.01D0
         do i=1,60
-          call lim_calc(grad, msg_lev)
+          call lim_calc(Ugr, Uin, msg_lev)
           call lim_save(i)
-          if (i.lt.30) grad=grad*sqrt(2D0)
-          if (i.ge.30) grad=grad/sqrt(2D0)
+          if (i.lt.30) Ugr=Ugr*sqrt(2D0)
+          if (i.ge.30) Ugr=Ugr/sqrt(2D0)
         enddo
 
-        grad=0D0
-        call lim_calc(grad, msg_lev)
-        grad=0.01D0
+        Ugr=0D0
+        call lim_calc(Ugr, Uin, msg_lev)
+        Ugr=0.01D0
 
         do i=61,90
-          call lim_calc(grad, msg_lev)
+          call lim_calc(Ugr, Uin, msg_lev)
           call lim_save(i)
-          grad=grad*sqrt(2D0)
+          Ugr=Ugr*sqrt(2D0)
         enddo
 
 
@@ -97,17 +98,18 @@
       end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine lim_calc(grad, msg_lev)
+      subroutine lim_calc(Ugr, Uin, msg_lev)
         implicit none
         include 'lim.fh'
-        real*8 grad,gmod
+        real*8 Ugr, Uin
 
         integer error, lw, msg_lev
         parameter (lw = 14*nx*ny)
         real*8 w(lw)
         external calc_en
 
-        Ug = grad
+        Ug = Ugr
+        Ui = Uin
         call tn(error, nx*ny, L, E, dE, w,lw, calc_en, msg_lev)
       end
 
@@ -123,12 +125,12 @@
             ! interaction energy and its derivative d/dLL(ix,iy)
             v = datan2(Ay(ix,iy),Ax(ix,iy))
             if (1.eq.1) then
-              E = E - dcos(v-LL(ix,iy))**2
-              dE(ix,iy) = -2D0*dcos(v-LL(ix,iy))*
-     .                         dsin(v-LL(ix,iy))
+              E = E - Ui*dcos(v-LL(ix,iy))**2
+              dE(ix,iy) = -2D0*Ui*dcos(v-LL(ix,iy))*
+     .                            dsin(v-LL(ix,iy))
             else
-              E = E - dcos(v-LL(ix,iy))
-              dE(ix,iy) = -2D0*dsin(v-LL(ix,iy))
+              E = E - Ui*dcos(v-LL(ix,iy))
+              dE(ix,iy) = -2D0*Ui*dsin(v-LL(ix,iy))
             endif
 
             ! gradient energy
@@ -186,7 +188,6 @@
         real*8 ph, c, x, r,g,b, mmod
         integer  i
         include 'lim.fh'
-
         c = 6D0*(ph/dpi - floor(ph/dpi))
 
         x = dmod(c, 1D0)
