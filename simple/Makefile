@@ -2,8 +2,7 @@ FFLAGS= -Werror -Wconversion\
   -Wline-truncation\
   -Waliasing  -Wampersand -Warray-bounds -Wcharacter-truncation\
   -Wline-truncation -Wsurprising -Wno-tabs -Wunderflow\
-  -Wno-unused-parameter -fPIC -fno-range-check -O
-#  -fcheck=all
+  -Wno-unused-parameter -fPIC -fno-range-check -O -g -frecursive
 
 FC=gfortran
 
@@ -20,4 +19,4 @@ lim: lim.o ../tn/tn.a
 
 clean:
 	rm -f *.o lim
-	make -C tn clean
+	make -C ../tn clean
