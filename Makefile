@@ -8,15 +8,14 @@ FC=gfortran
 
 all: lim
 
-lim: lim.o ../tn/tn.a
+lim: lim.o tn/tn.a
 	$(FC) $(LDFLAGS) -g -o $@ $+  $(LDLIBS)
 
-../tn/tn.a:
-	make -C ../tn
-
+tn/tn.a:
+	make -C tn
 
 ####
 
 clean:
 	rm -f *.o lim
-	make -C ../tn clean
+	make -C tn clean
